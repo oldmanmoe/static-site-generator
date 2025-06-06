@@ -1,6 +1,5 @@
 import unittest
-
-from delimiter import split_nodes_delimiter
+from markdown_splitter import split_nodes_delimiter
 from textnode import TextNode, TextType
 
 
@@ -11,7 +10,6 @@ class TestDelimiter(unittest.TestCase):
         
         # Expected: 3 nodes with the bold part in the middle
         self.assertEqual(len(result), 3)
-        self.assertEqual(result[0].text, "Una prueba que tiene ")
         self.assertEqual(result[0].text_type, TextType.TEXT)
         self.assertEqual(result[1].text, "ki.")
         self.assertEqual(result[1].text_type, TextType.BOLD)

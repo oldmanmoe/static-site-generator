@@ -9,7 +9,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/src/delimiter.py",
+            "program": "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/src/text_to_textnodes.py",
             "console": "integratedTerminal"
         }
     ]

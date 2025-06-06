@@ -61,17 +61,6 @@ class ParentNode(HTMLNode):
         return html
 
 
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
 if __name__ == "__main__":
     unittest.main()
         
