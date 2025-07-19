@@ -1,5 +1,7 @@
 import unittest
 
+
+
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
@@ -18,7 +20,6 @@ class HTMLNode:
                 result += f' {k}="{v}"'
         return result
     
-
     def __repr__(self):
         return f"Tag:{self.tag}\n Value:{self.value}\n Children:{self.children}\n Props:{self.props}"
             
