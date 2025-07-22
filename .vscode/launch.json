@@ -10,7 +10,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/src/test_block_markdown.py",
+            "program": "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/src/main.py",
             "console": "integratedTerminal"
         }
     ]
