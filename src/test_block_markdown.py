@@ -1,6 +1,5 @@
 
 import unittest
-from htmlnode import ParentNode, LeafNode
 from block_markdown import (
     markdown_to_html_node,
     BlockType,
