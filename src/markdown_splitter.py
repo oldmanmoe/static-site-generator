@@ -13,7 +13,7 @@ def text_to_textnodes(text):
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     def find_delimiter_pairs(text, delimiter=delimiter):
-        start_index  = text.find(delimiter)
+        start_index = text.find(delimiter)
         if start_index == -1:
             return None
 
@@ -30,17 +30,23 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for node in old_nodes: 
         if node.text_type == TextType.TEXT:
-            result = find_delimiter_pairs(node.text)
-            if result:
+            current_text = node.text
+            
+            while True:
+                result = find_delimiter_pairs(current_text)
+                if not result:
+                    if current_text:
+                        new_nodes.append(TextNode(current_text, TextType.TEXT))
+                    break
                 before_text, delimiter_text, after_text = result
-                new_nodes.append(TextNode(before_text, TextType.TEXT))
+                
+                if before_text:
+                    new_nodes.append(TextNode(before_text, TextType.TEXT))
                 new_nodes.append(TextNode(delimiter_text, text_type))
-                new_nodes.append(TextNode(after_text, TextType.TEXT))
-            else:
-                new_nodes.append(node)
+                current_text = after_text
         else:
             new_nodes.append(node)     
-    return new_nodes       
+    return new_nodes
 
 
 def split_nodes_image(old_nodes):
@@ -97,10 +103,21 @@ def extract_markdown_images(text):
 
 
 def extract_markdown_links(text):
-    image_matches = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
-    return image_matches
-
-
+    # First find all potential link patterns
+    all_matches = re.findall(r"\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    
+    # Then filter out the ones that are actually images (preceded by !)
+    link_matches = []
+    for match in all_matches:
+        link_text, url = match
+        pattern = f"[{link_text}]({url})"
+        image_pattern = f"![{link_text}]({url})"
+        
+        # Check if this pattern appears as an image in the text
+        if image_pattern not in text:
+            link_matches.append(match)
+    
+    return link_matches
 
 
 

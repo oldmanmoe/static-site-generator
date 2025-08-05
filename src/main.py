@@ -7,15 +7,14 @@ from block_markdown import markdown_to_html_node
 
 
 def main():    
-
+    static_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/static")
+    public_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/public")
+    template_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/template.html")
+    content_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/content")
+    find_files(static_path, public_path)
     
-    find_files("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/static",
-               "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/public")
-    
-    generate_page("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/content/index.md",
-                  "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/template.html",
-                  "/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/public")
-        
+    generate_pages_recursive(content_path, template_path, public_path)
+ 
 
 def find_files(src_path, dest_path, file_log=None):
     if os.path.exists(dest_path):
@@ -80,6 +79,34 @@ def generate_page(from_path, template_path, dest_path):
     
     with open(dest_path, 'w') as dest_file:
         dest_file.write(output)
+        
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    
+    dir_path_content = Path(dir_path_content)
+    template_path = Path(template_path)
+    dest_dir_path = Path(dest_dir_path)
+   
+    
+    content_list = os.listdir(dir_path_content)
+    
+    for file in content_list:
+        
+        new_content_path = os.path.join(dir_path_content, file)
+        new_dest_path = os.path.join(dest_dir_path, file)
+        if os.path.isfile(new_content_path):
+            html_path = Path(new_dest_path).with_suffix(".html")
+            generate_page(new_content_path, template_path, html_path)
+        else:
+            Path(new_dest_path).mkdir(parents=True,exist_ok=True)            
+            generate_pages_recursive(new_content_path, template_path, new_dest_path)    
+
+
+    
+            
+            
+    
+        
+            
     
 if __name__ == "__main__":
     main()
