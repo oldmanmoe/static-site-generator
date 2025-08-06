@@ -17,12 +17,11 @@ def main():
         basepath = sys.argv[1]
     else:
         basepath = "/"
-
     print(f"\n\n!!!! BASE PATH: {basepath}")
-
-
-    find_files(static_path, docs_path)
+    print(f"!!! SYS.ARGV: {sys.argv}")
+    print("**** THIS IS THE REAL MAIN.PY RUNNING! ****")
     
+    find_files(static_path, docs_path)
     generate_pages_recursive(content_path, template_path, docs_path, basepath)
  
 
@@ -83,8 +82,8 @@ def generate_page(from_path, template_path, dest_path, basepath):
     output = (template_content
               .replace("{{ Title }}",fpath_title)
               .replace("{{ Content }}",fpath_html)
-              .replace("href=/",f"href={basepath}")
-              .replace("src=/", f"src={basepath}"))
+              .replace('href="/',f'href="{basepath}')
+              .replace('src="/', f'src="{basepath}'))
      
     
     if dest_path.is_dir():
