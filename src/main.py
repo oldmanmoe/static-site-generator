@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 from pathlib import Path
 from htmlnode import *
@@ -8,12 +9,21 @@ from block_markdown import markdown_to_html_node
 
 def main():    
     static_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/static")
-    public_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/public")
+    docs_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/docs")
     template_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/template.html")
     content_path = Path("/Users/moisesangeles/workspace/github.com/oldmanmoe/static-site-generator/content")
-    find_files(static_path, public_path)
+
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    else:
+        basepath = "/"
+
+    print(f"\n\n!!!! BASE PATH: {basepath}")
+
+
+    find_files(static_path, docs_path)
     
-    generate_pages_recursive(content_path, template_path, public_path)
+    generate_pages_recursive(content_path, template_path, docs_path, basepath)
  
 
 def find_files(src_path, dest_path, file_log=None):
@@ -54,7 +64,7 @@ def extract_title(markdown):
         if not found:
             raise Exception("Title not found: Missing #")
     
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"\n\nGenerating path from {from_path} to {dest_path} using {template_path}")
     
     from_path = Path(from_path)
@@ -70,7 +80,12 @@ def generate_page(from_path, template_path, dest_path):
     fpath_html = markdown_to_html_node(fpath_content).to_html()
     fpath_title = extract_title(fpath_content)
     
-    output = template_content.replace("{{ Title }}", fpath_title).replace("{{ Content }}", fpath_html) 
+    output = (template_content
+              .replace("{{ Title }}",fpath_title)
+              .replace("{{ Content }}",fpath_html)
+              .replace("href=/",f"href={basepath}")
+              .replace("src=/", f"src={basepath}"))
+     
     
     if dest_path.is_dir():
         dest_path = dest_path / "index.html"
@@ -80,7 +95,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, 'w') as dest_file:
         dest_file.write(output)
         
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     
     dir_path_content = Path(dir_path_content)
     template_path = Path(template_path)
@@ -95,10 +110,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         new_dest_path = os.path.join(dest_dir_path, file)
         if os.path.isfile(new_content_path):
             html_path = Path(new_dest_path).with_suffix(".html")
-            generate_page(new_content_path, template_path, html_path)
+            generate_page(new_content_path, template_path, html_path, basepath)
         else:
             Path(new_dest_path).mkdir(parents=True,exist_ok=True)            
-            generate_pages_recursive(new_content_path, template_path, new_dest_path)    
+            generate_pages_recursive(new_content_path, template_path, new_dest_path, basepath)    
 
 
     
