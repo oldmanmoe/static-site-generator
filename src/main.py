@@ -17,9 +17,6 @@ def main():
         basepath = sys.argv[1]
     else:
         basepath = "/"
-    print(f"\n\n!!!! BASE PATH: {basepath}")
-    print(f"!!! SYS.ARGV: {sys.argv}")
-    print("**** THIS IS THE REAL MAIN.PY RUNNING! ****")
     
     find_files(static_path, docs_path)
     generate_pages_recursive(content_path, template_path, docs_path, basepath)
@@ -112,15 +109,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
             generate_page(new_content_path, template_path, html_path, basepath)
         else:
             Path(new_dest_path).mkdir(parents=True,exist_ok=True)            
-            generate_pages_recursive(new_content_path, template_path, new_dest_path, basepath)    
-
-
-    
-            
-            
-    
-        
-            
+            generate_pages_recursive(new_content_path, template_path, new_dest_path, basepath)          
     
 if __name__ == "__main__":
     main()
