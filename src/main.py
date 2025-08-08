@@ -76,11 +76,13 @@ def generate_page(from_path, template_path, dest_path, basepath):
     fpath_html = markdown_to_html_node(fpath_content).to_html()
     fpath_title = extract_title(fpath_content)
     
+    print(f"\nBefore replacement: {fpath_html[:200]}")  # Show first 200 chars
     output = (template_content
-              .replace("{{ Title }}",fpath_title)
-              .replace("{{ Content }}",fpath_html)
-              .replace('href="/',f'href="{basepath}')
-              .replace('src="/', f'src="{basepath}'))
+          .replace("{{ Title }}",fpath_title)
+          .replace("{{ Content }}",fpath_html)
+          .replace('href="/',f'href="{basepath}')
+          .replace('src="/', f'src="{basepath}'))
+    print(f"\nAfter replacement: {output[output.find('<img'):output.find('</img>')+6]}")  # Show img tag
      
     
     if dest_path.is_dir():

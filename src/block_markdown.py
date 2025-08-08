@@ -157,16 +157,13 @@ def strip_quote_prefix(block):
         stripped_line = line.strip()
         if not stripped_line:
             continue
-            
         if line.startswith("> "):
             content_lines.append(line[2:])
-            tag = "blockquote"
         else:
-            content_lines.append(line)
-            tag = "p"  
+            content_lines.append(line) 
     
     content = "\n".join(content_lines)
-    return tag, content     
+    return content     
 
 
 def process_list_block(block, list_type="ul"):
@@ -219,8 +216,8 @@ def markdown_to_html_node(markdown):
             children_nodes.append(code_parent) 
         
         if block_type == BlockType.QUOTE:
-            quote_tag, quote_content = strip_quote_prefix(block_copy)  # Unpack the tuple
-            quote_child = text_to_children(quote_content)              # Pass just the content
+            quote_content = strip_quote_prefix(block_copy) 
+            quote_child = text_to_children(quote_content) 
             quote_parent = ParentNode("blockquote", quote_child)
             children_nodes.append(quote_parent)
        
