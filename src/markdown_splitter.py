@@ -103,17 +103,14 @@ def extract_markdown_images(text):
 
 
 def extract_markdown_links(text):
-    # First find all potential link patterns
     all_matches = re.findall(r"\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     
-    # Then filter out the ones that are actually images (preceded by !)
     link_matches = []
     for match in all_matches:
         link_text, url = match
         pattern = f"[{link_text}]({url})"
         image_pattern = f"![{link_text}]({url})"
         
-        # Check if this pattern appears as an image in the text
         if image_pattern not in text:
             link_matches.append(match)
     

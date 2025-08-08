@@ -147,7 +147,7 @@ def strip_code_block(block):
             block = '\n'.join(lines[1:])
     return block
           
-def strip_beginning_char(block):
+def strip_quote_prefix(block):
     lines = block.split("\n")
     tag = ""
     content_lines = []
@@ -161,19 +161,41 @@ def strip_beginning_char(block):
         if line.startswith("> "):
             content_lines.append(line[2:])
             tag = "blockquote"
-        elif line.startswith("- "):
-            content_lines.append(line[2:])
-            tag = "li"
-        elif line.startswith(f"{i}. "):
-            content_lines.append(line[len(f"{i}. "):])
-            i += 1
-            tag = "li"
         else:
             content_lines.append(line)
             tag = "p"  
     
     content = "\n".join(content_lines)
-    return tag, content          
+    return tag, content     
+
+
+def process_list_block(block, list_type="ul"):
+    """Process a list block and return proper list items"""
+    lines = block.split("\n")
+    list_items = []
+    
+    i = 1  # For ordered lists
+    for line in lines:
+        stripped_line = line.strip()
+        if not stripped_line:
+            continue
+            
+        if list_type == "ul" and line.startswith("- "):
+            # Extract content after "- "
+            item_content = line[2:]
+            # Process the content for inline markdown (images, links, etc.)
+            item_children = text_to_children(item_content)
+            list_items.append(ParentNode("li", item_children))
+            
+        elif list_type == "ol" and line.startswith(f"{i}. "):
+            # Extract content after "1. ", "2. ", etc.
+            item_content = line[len(f"{i}. "):]
+            # Process the content for inline markdown (images, links, etc.)
+            item_children = text_to_children(item_content)
+            list_items.append(ParentNode("li", item_children))
+            i += 1
+    
+    return list_items     
 
 def markdown_to_html_node(markdown):
     children_nodes = []
@@ -197,22 +219,20 @@ def markdown_to_html_node(markdown):
             children_nodes.append(code_parent) 
         
         if block_type == BlockType.QUOTE:
-            quote_content = strip_beginning_char(block_copy)
-            quote_child = text_to_children(quote_content[1])
+            quote_tag, quote_content = strip_quote_prefix(block_copy)  # Unpack the tuple
+            quote_child = text_to_children(quote_content)              # Pass just the content
             quote_parent = ParentNode("blockquote", quote_child)
             children_nodes.append(quote_parent)
        
         if block_type == BlockType.ULIST:
-            ulist_tag, ulist_content = strip_beginning_char(block_copy)
-            ulist_child = text_to_children(ulist_content, ulist_tag)
-            ulist_parent = ParentNode("ul",ulist_child)
+            list_items = process_list_block(block_copy, "ul")
+            ulist_parent = ParentNode("ul", list_items)
             children_nodes.append(ulist_parent)
         
         if block_type == BlockType.OLIST:
-            olist_tag, olist_content = strip_beginning_char(block_copy)
-            olist_child = text_to_children(olist_content, olist_tag)
-            olist_parent = ParentNode("ol", olist_child)
-            children_nodes.append(olist_parent) 
+            list_items = process_list_block(block_copy, "ol")
+            olist_parent = ParentNode("ol", list_items)
+            children_nodes.append(olist_parent)
            
     return ParentNode("div", children_nodes)
 
